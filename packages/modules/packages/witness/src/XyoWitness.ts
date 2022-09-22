@@ -8,7 +8,7 @@ import { XyoWitnessObserveQuerySchema, XyoWitnessQuery } from './Queries'
 import { Witness } from './Witness'
 
 export class XyoWitness<TTarget extends XyoPayload = XyoPayload, TConfig extends XyoWitnessConfig<TTarget> = XyoWitnessConfig<TTarget>>
-  extends XyoModule<TConfig>
+  extends XyoModule<XyoWitnessQuery, TConfig>
   implements Witness<TTarget>
 {
   //we require a config for witnesses

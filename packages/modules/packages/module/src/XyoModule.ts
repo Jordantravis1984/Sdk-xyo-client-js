@@ -16,7 +16,7 @@ import { XyoQuery } from './Query'
 
 export type XyoModuleResolverFunc = (address: string) => XyoModule | null
 
-export abstract class XyoModule<TConfig extends XyoModuleConfig = XyoModuleConfig> implements Module {
+export abstract class XyoModule<TQuery extends XyoQuery = XyoQuery, TConfig extends XyoModuleConfig = XyoModuleConfig> implements Module<TQuery> {
   protected config?: TConfig
   protected account: XyoAccount
   protected resolver?: XyoModuleResolverFunc
@@ -36,7 +36,7 @@ export abstract class XyoModule<TConfig extends XyoModuleConfig = XyoModuleConfi
     return !!this.queries().find((item) => item === schema)
   }
 
-  public queries(): string[] {
+  public queries(): TQuery['schema'][] {
     return [XyoModuleDiscoverQuerySchema, XyoModuleInitializeQuerySchema, XyoModuleSubscribeQuerySchema, XyoModuleShutdownQuerySchema]
   }
 

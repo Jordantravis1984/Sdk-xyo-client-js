@@ -7,6 +7,7 @@ import { XyoWitnessWrapper } from './XyoWitnessWrapper'
 describe('XyoWitness', () => {
   it('implements Module', async () => {
     const witness: Module = new XyoWitness({ schema: 'xyo.network.test.witness.config', targetSchema: 'xyo.network.test' })
+    const queries = witness.queries()
     const wrapper = new XyoWitnessWrapper(witness)
     const payload = await wrapper.observe()
     expect(payload?.schema).toBe('xyo.network.test')

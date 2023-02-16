@@ -30,6 +30,15 @@ const testAddress = '2a260a110bc7b03f19c40a0bd04ff2c5dcb57594'
   q: '04779dd197a5df977ed2cf6cb31d82d43328b790dc6b3b7d4437a427bd5847dfcde94b724a555b6d017bb7607c3e3281daf5b1699d6ef4124975c9237b917d426f',
 }*/
 
+const mnemonics = [
+  'music snack noble scheme invest off disease pulp mountain sting present uncover steak visual bachelor wait please wreck dwarf lecture car excuse seminar educate',
+  'another royal picture transfer yard point lecture carpet tonight sister diesel body yard clarify cream mom current margin unit fan ladder wisdom exercise feed',
+  'quantum pumpkin robot candy doctor brass plate giggle squeeze vanish purpose depend',
+  'satoshi cake access cannon feed source art oblige turtle perfect turtle dolphin',
+  'food cream bacon divorce bring gravity employ taste hub fish tennis put',
+]
+const paths = ['m/0/4', "m/44'/0'/0'", "m/44'/60'/0'/0/0", "m/44'/60'/0'/0/1", "m/49'/0'/0'", "m/84'/0'/0'", "m/84'/0'/0'/0"]
+
 describe('XyoAccount', () => {
   test('Address from Phrase', () => {
     const wallet = Account.fromPhrase('test')
@@ -98,14 +107,6 @@ describe('XyoAccount', () => {
   })
 
   describe('fromMnemonic', () => {
-    const mnemonics = [
-      'music snack noble scheme invest off disease pulp mountain sting present uncover steak visual bachelor wait please wreck dwarf lecture car excuse seminar educate',
-      'another royal picture transfer yard point lecture carpet tonight sister diesel body yard clarify cream mom current margin unit fan ladder wisdom exercise feed',
-      'quantum pumpkin robot candy doctor brass plate giggle squeeze vanish purpose depend',
-      'satoshi cake access cannon feed source art oblige turtle perfect turtle dolphin',
-      'food cream bacon divorce bring gravity employ taste hub fish tennis put',
-    ]
-    const paths = ['m/0/4', "m/44'/0'/0'", "m/44'/60'/0'/0/0", "m/44'/60'/0'/0/1", "m/49'/0'/0'", "m/84'/0'/0'", "m/84'/0'/0'/0"]
     it.each(mnemonics)('generates account from mnemonic', (mnemonic: string) => {
       const account = Account.fromMnemonic(mnemonic)
       expect(account).toBeObject()
@@ -115,6 +116,16 @@ describe('XyoAccount', () => {
       const account = Account.fromMnemonic(mnemonics[0], path)
       expect(account).toBeObject()
       expect(account.addressValue.hex).toBeString()
+    })
+  })
+  describe('fromRelativePath', () => {
+    it.each(paths)('calculates the same Account as absolute path', (path) => {
+      const relativePath = '0'
+      const absolutePath = `${path}/${relativePath}`
+      const parent = Account.fromMnemonic(mnemonics[0], path)
+      const child = Account.fromRelativePath(parent, relativePath)
+      const account = Account.fromMnemonic(mnemonics[0], absolutePath)
+      expect(child.addressValue.hex).toEqual(account.addressValue.hex)
     })
   })
 })

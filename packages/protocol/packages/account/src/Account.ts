@@ -93,6 +93,13 @@ export class Account extends KeyPair {
     return new Account({ privateKey })
   }
 
+  static fromRelativePath = (account: Account, path: string): Account => {
+    const node = HDNode.fromExtendedKey(account.private.hex)
+    const child = node.derivePath(path)
+    const privateKey = child.privateKey.padStart(64, '0')
+    return Account.fromPrivateKey(privateKey)
+  }
+
   static isXyoWallet(value: unknown): boolean {
     return (value as Account)?._isXyoWallet || false
   }

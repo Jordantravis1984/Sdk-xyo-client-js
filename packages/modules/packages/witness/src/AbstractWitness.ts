@@ -36,13 +36,13 @@ export class AbstractWitness<TParams extends WitnessParams = WitnessParams, TEve
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<WitnessQuery>(query, payloads)
     const typedQuery = wrapper.query.payload
     assertEx(this.queryable(query, payloads, queryConfig))
     // Remove the query payload from the arguments passed to us so we don't observe it
     const filteredObservation = payloads?.filter((p) => new PayloadWrapper(p).hash !== query.query) || []
-    const queryAccount = new Account()
     try {
       switch (typedQuery.schema) {
         case WitnessObserveQuerySchema: {
@@ -52,7 +52,7 @@ export class AbstractWitness<TParams extends WitnessParams = WitnessParams, TEve
           return this.bindResult(resultPayloads, queryAccount)
         }
         default: {
-          return super.queryHandler(query, payloads)
+          return super.queryHandler(query, payloads, queryConfig, queryAccount)
         }
       }
     } catch (ex) {

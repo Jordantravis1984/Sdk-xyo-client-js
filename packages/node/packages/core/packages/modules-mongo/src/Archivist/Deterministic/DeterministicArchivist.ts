@@ -192,14 +192,13 @@ export class MongoDBDeterministicArchivist<
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    // TODO: Use new Account once we mock Account.new in Jest
+    queryAccount = Account.random(),
   ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<ArchivistQuery>(query, payloads)
     const typedQuery = wrapper.query.payload
     assertEx(this.queryable(query, payloads, queryConfig))
     const resultPayloads: Payload[] = []
-    // TODO: Use new Account once we mock Account.new in Jest
-    const queryAccount = Account.random()
-    // const queryAccount = new Account()
     try {
       switch (typedQuery.schema) {
         case ArchivistFindQuerySchema: {
@@ -215,7 +214,7 @@ export class MongoDBDeterministicArchivist<
           break
         }
         default:
-          return super.queryHandler(query, payloads)
+          return super.queryHandler(query, payloads, queryConfig, queryAccount)
       }
     } catch (ex) {
       const error = ex as Error

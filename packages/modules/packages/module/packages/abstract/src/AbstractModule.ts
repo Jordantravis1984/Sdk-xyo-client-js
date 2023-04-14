@@ -138,13 +138,12 @@ export class AbstractModule<TParams extends ModuleParams = ModuleParams, TEventD
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     this.started('throw')
-    const result = await this.queryHandler(query, payloads, queryConfig)
-
+    const result = await this.queryHandler(query, payloads, queryConfig, queryAccount)
     const args: ModuleQueriedEventArgs = { module: this as Module, payloads, query, result }
     await this.emit('moduleQueried', args)
-
     return result
   }
 
@@ -255,6 +254,7 @@ export class AbstractModule<TParams extends ModuleParams = ModuleParams, TEventD
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     this.started('throw')
     const wrapper = QueryBoundWitnessWrapper.parseQuery<ModuleQuery>(query, payloads)
@@ -266,7 +266,6 @@ export class AbstractModule<TParams extends ModuleParams = ModuleParams, TEventD
     const typedQuery = wrapper.query.payload
     assertEx(this.queryable(query, payloads, queryConfig))
     const resultPayloads: Payload[] = []
-    const queryAccount = new Account()
     try {
       switch (typedQuery.schema) {
         case ModuleDiscoverQuerySchema: {

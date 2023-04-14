@@ -117,12 +117,12 @@ export abstract class AbstractArchivist<
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<ArchivistQuery>(query, payloads)
     const typedQuery = wrapper.query.payload
     assertEx(this.queryable(query, payloads, queryConfig))
     const resultPayloads: Payload[] = []
-    const queryAccount = new Account()
     if (this.config.storeQueries) {
       await this.insert([query])
     }
@@ -156,7 +156,7 @@ export abstract class AbstractArchivist<
           break
         }
         default:
-          return super.queryHandler(query, payloads)
+          return super.queryHandler(query, payloads, queryConfig, queryAccount)
       }
     } catch (ex) {
       const error = ex as Error

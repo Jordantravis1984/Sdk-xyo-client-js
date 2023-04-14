@@ -55,11 +55,11 @@ export class MemorySentinel<
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<SentinelQuery>(query, payloads)
     const typedQuery = wrapper.query
     assertEx(this.queryable(query, payloads, queryConfig))
-    const queryAccount = new Account()
     const resultPayloads: Payload[] = []
     try {
       switch (typedQuery.schemaName) {
@@ -68,7 +68,7 @@ export class MemorySentinel<
           break
         }
         default:
-          return super.queryHandler(query, payloads)
+          return super.queryHandler(query, payloads, queryConfig, queryAccount)
       }
     } catch (ex) {
       const error = ex as Error

@@ -31,13 +31,13 @@ export abstract class AbstractDiviner<
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<DivinerQuery>(query, payloads)
     //remove the query payload
     const cleanPayloads = payloads?.filter((payload) => PayloadWrapper.hash(payload) !== query.query)
     const typedQuery = wrapper.query
     assertEx(this.queryable(query, payloads, queryConfig))
-    const queryAccount = new Account()
     const resultPayloads: Payload[] = []
     try {
       switch (typedQuery.schemaName) {
@@ -47,7 +47,7 @@ export abstract class AbstractDiviner<
           await this.emit('reportEnd', { inPayloads: payloads, module: this, outPayloads: resultPayloads })
           break
         default:
-          return super.queryHandler(query, payloads)
+          return super.queryHandler(query, payloads, queryConfig, queryAccount)
       }
     } catch (ex) {
       const error = ex as Error

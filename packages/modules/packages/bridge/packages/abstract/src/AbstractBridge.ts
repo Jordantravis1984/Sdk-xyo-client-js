@@ -52,10 +52,14 @@ export abstract class AbstractBridge<
     return (await this.targetDownResolver(address).resolve(filter)) as TModule[]
   }
 
-  protected override async queryHandler<T extends QueryBoundWitness = QueryBoundWitness>(query: T, payloads?: Payload[]): Promise<ModuleQueryResult> {
+  protected override async queryHandler<T extends QueryBoundWitness = QueryBoundWitness, TConfig extends ModuleConfig = ModuleConfig>(
+    query: T,
+    payloads?: Payload[],
+    queryConfig?: TConfig,
+    queryAccount = new Account(),
+  ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<BridgeQuery>(query, payloads)
     const typedQuery = wrapper.query.payload
-    const queryAccount = new Account()
     const resultPayloads: Payload[] = []
     try {
       switch (typedQuery.schema) {
@@ -68,7 +72,7 @@ export abstract class AbstractBridge<
           break
         }
         default:
-          return await super.queryHandler(query, payloads)
+          return await super.queryHandler(query, payloads, queryConfig, queryAccount)
       }
     } catch (ex) {
       const error = ex as Error

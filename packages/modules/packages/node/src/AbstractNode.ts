@@ -87,11 +87,11 @@ export abstract class AbstractNode<TParams extends NodeModuleParams = NodeModule
     query: T,
     payloads?: Payload[],
     queryConfig?: TConfig,
+    queryAccount = new Account(),
   ): Promise<ModuleQueryResult> {
     const wrapper = QueryBoundWitnessWrapper.parseQuery<XyoNodeQuery>(query, payloads)
     const typedQuery = wrapper.query.payload
     assertEx(this.queryable(query, payloads, queryConfig))
-    const queryAccount = new Account()
     const resultPayloads: Payload[] = []
     try {
       switch (typedQuery.schema) {
@@ -128,7 +128,7 @@ export abstract class AbstractNode<TParams extends NodeModuleParams = NodeModule
           break
         }
         default:
-          return await super.queryHandler(query, payloads)
+          return await super.queryHandler(query, payloads, queryConfig, queryAccount)
       }
     } catch (ex) {
       const error = ex as Error
